@@ -37,10 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'cloudinary',
-    'userapp',
+    'rest_framework',
+    'auth_app',
+    'phonenumber_field',
+    'djoser',
 ]
+
+AUTH_USER_MODEL = 'auth_app.CustomUser'
 
 
 cloudinary.config(
@@ -97,7 +101,7 @@ WSGI_APPLICATION = 'cyberguard.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cyberguard',
+        'NAME': 'cyber',
         'USER': 'root',
         'PASSWORD': '1234',
         'HOST': 'localhost',

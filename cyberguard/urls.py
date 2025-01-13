@@ -17,9 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from userapp.urls import router
-
 urlpatterns = [
+    path('api/', include('auth_app.urls')),
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
 ]
