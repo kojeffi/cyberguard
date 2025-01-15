@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 class RegisterTrainerSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
     invitation_code = serializers.CharField(write_only=True)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
 
     class Meta:
         model = CustomUser
@@ -20,9 +22,9 @@ class RegisterTrainerSerializer(serializers.ModelSerializer):
         # Validate invitation code
         invitation_code = data.get('invitation_code')
         try:
-            code = InvitationCode.objects.get(code=invitation_code, used_by__isnull=True)
+            code = InvitationCode.objects.get(code=invitation_code)
         except InvitationCode.DoesNotExist:
-            raise serializers.ValidationError("Invalid or already used invitation code.")
+            raise serializers.ValidationError("Invalid invitation code.")
 
         data['invitation_code_instance'] = code
         return data
@@ -32,6 +34,8 @@ class RegisterTrainerSerializer(serializers.ModelSerializer):
         validated_data.pop('confirm_password')
         code_instance = validated_data.pop('invitation_code_instance')
 
+        # Ensure that the username is set to email
+        validated_data['username'] = validated_data.get('email')
         # Create user
         user = CustomUser.objects.create_user(**validated_data, is_trainer=True)
 
@@ -43,10 +47,12 @@ class RegisterTrainerSerializer(serializers.ModelSerializer):
 
 class RegisterStudentSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'password', 'confirm_password']
+        fields = ['first_name', 'last_name', 'email', 'password', 'confirm_password']
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
@@ -55,6 +61,9 @@ class RegisterStudentSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('confirm_password')
+
+        # Ensure that the username is set to email
+        validated_data['username'] = validated_data.get('email')
         user = CustomUser.objects.create_user(**validated_data, is_student=True)
         return user
 
@@ -63,3 +72,15 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['phone_number', 'gender', 'birth_date', 'education', 'linkedin_url', 'profile_image']
+
+
+class LoginTrainerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'password']
+
+
+class LoginStudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'password']

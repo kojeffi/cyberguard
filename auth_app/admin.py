@@ -4,7 +4,8 @@ from .models import InvitationCode, Profile, CustomUser
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'phone_number', 'gender', 'birth_date', 'education', 'linkedin_url')
+    list_display = ('user', 'phone_number', 'gender', 'birth_date',
+                    'education', 'linkedin_url','uploaded_cv','profile_image')
     search_fields = ('user__username', 'phone_number', 'education')
 
 
@@ -17,7 +18,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 @admin.register(InvitationCode)
 class InvitationCodeAdmin(admin.ModelAdmin):
-    list_display = ('code', 'created_at', 'used_by')  # Ensure these fields exist in InvitationCode model
+    list_display = ('code', 'created_at')  # Ensure these fields exist in InvitationCode model
     search_fields = ('code',)
     list_filter = ('created_at',)
     readonly_fields = ('created_at',)
